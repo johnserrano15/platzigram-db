@@ -1,0 +1,26 @@
+{
+  "name": "platzigramdb",
+  "version": "1.0.0",
+  "description": "Platzigram Database Client",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard"
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnserrano15/platzigram-db.git"
+  },
+  "author": "John Serrano <jandreys15@gmail.com> (https://twitter.com/jandrey15)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/johnserrano15/platzigram-db/issues"
+  },
+  "homepage": "https://github.com/johnserrano15/platzigram-db#readme",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "standard": "^10.0.3"
+  }
+}
