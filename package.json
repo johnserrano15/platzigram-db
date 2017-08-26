@@ -9,6 +9,27 @@
   "standard": {
     "parser": "babel-eslint"
   },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es6": true,
+      "node": true,
+      "jquery": true
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-use-before-define": "warn",
+      "spaced-comment": "warn"
+    },
+    "extends": "standard"
+  },
+  "eslintIgnore": [
+    "/node_modules/*",
+    "build/*",
+    "!build/index.js",
+    "bundle.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/johnserrano15/platzigram-db.git"
@@ -21,6 +42,12 @@
   "homepage": "https://github.com/johnserrano15/platzigram-db#readme",
   "devDependencies": {
     "babel-eslint": "^7.2.3",
+    "eslint": "^4.5.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1",
     "standard": "^10.0.3"
   }
 }
