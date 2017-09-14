@@ -6,25 +6,27 @@ const r = require('rethinkdb')
 const Db = require('../')
 const fixtures = require('./fixtures')
 
-const dbName = `platzigram_${uuid.v4()}`
-const db = new Db({ db: dbName })
-
-test.before('setup database', async t => {
+test.beforeEach('setup database', async t => {
+  const dbName = `platzigram_${uuid.v4()}`
+  const db = new Db({ db: dbName })
   await db.connect()
+  t.context.db = db
+  t.context.dbName = dbName
   t.true(db.connected, 'Should be connected')
 })
 
-test.after('disconnect database', async t => {
+test.afterEach.always('cleanup database', async t => {
+  let db = t.context.db
+  let dbName = t.context.dbName
   await db.disconnect()
   t.false(db.connected, 'Should be disconnect')
-})
 
-test.after.always('cleanup database', async t => {
   let conn = await r.connect({})
   await r.dbDrop(dbName).run(conn)
 })
 
 test('save image', async t => {
+  let db = t.context.db
   t.is(typeof db.saveImage, 'function', 'Save Image in function ')
 
   let image = fixtures.getImage()
@@ -44,6 +46,7 @@ test('save image', async t => {
 })
 
 test('like image', async t => {
+  let db = t.context.db
   // preguntamos que exista una funcion con nmae likeImage
   t.is(typeof db.likeImage, 'function', 'like images is a function')
   // Traemos la imagen
@@ -57,4 +60,33 @@ test('like image', async t => {
   t.true(result.liked)
   // Y que el liked aya aumentado a mas uno
   t.is(result.likes, image.likes + 1)
+})
+
+test('get image', async t => {
+  let db = t.context.db
+  // preguntamos que exista una funcion con nmae getImage
+  t.is(typeof db.getImage, 'function', 'getImage is a function')
+  // Traemos la imagen
+  let image = fixtures.getImage()
+  // guardamos la imagen
+  let created = await db.saveImage(image)
+  // le pasamos el id public a la function getImage
+  let result = await db.getImage(created.public_id)
+  // validamos que sea igul lo que se va a crear a lo que devulve el getimage
+  t.deepEqual(created, result)
+})
+
+test('list all images', async t => {
+  let db = t.context.db
+  // Traemos la imagen
+  let images = fixtures.getImages(3)
+  // Creamos un array 
+  let saveImages = images.map(img => db.saveImage(img))
+  // console.log(saveImages)
+  // guardamos las images
+  let created = await Promise.all(saveImages)
+  // console.log(created)
+  let result = await db.getImages()
+
+  t.is(created.length, result.length)
 })

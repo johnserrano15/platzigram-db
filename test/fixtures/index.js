@@ -2,6 +2,7 @@
 
 const uuid = require('uuid-base62')
 
+// Todo esto es solo para simular que existe contenido en la database.
 const fixtures = {
   getImage () {
     return {
@@ -11,6 +12,14 @@ const fixtures = {
       liked: false,
       user_id: uuid.uuid()
     }
+  },
+  getImages (n) {
+    let images = []
+    while (n-- > 0) {
+      images.push(this.getImage())
+    }
+
+    return images
   }
 }
 
