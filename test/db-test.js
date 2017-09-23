@@ -115,8 +115,8 @@ test('get user', async t => {
   t.is(typeof db.getUser, 'function', 'getUser is a function')
 
   let user = fixtures.getUser()
-  let created = await db.getUser(user)
-  let result = await db.getUser(user.name)
+  let created = await db.saveUser(user)
+  let result = await db.getUser(user.username)
 
   t.deepEqual(created, result)
 })
