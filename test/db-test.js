@@ -39,9 +39,9 @@ test('save image', async t => {
   t.is(created.likes, image.likes)
   t.is(created.liked, image.liked)
   t.deepEqual(created.tags, ['awesome', 'platzi'])
-  t.is(created.user_id, image.user_id)
+  t.is(created.userId, image.userId)
   t.is(typeof created.id, 'string')
-  t.is(created.public_id, uuid.encode(created.id))
+  t.is(created.publicId, uuid.encode(created.id))
   // Fecha de creacion
   t.truthy(created.createdAt)
 })
@@ -55,7 +55,7 @@ test('like image', async t => {
   // guardamos la imagen
   let created = await db.saveImage(image)
   // le pasamos el id public a la function likeImage
-  let result = await db.likeImage(created.public_id)
+  let result = await db.likeImage(created.publicId)
 
   // validamos que el resultado si sea like
   t.true(result.liked)
@@ -72,7 +72,7 @@ test('get image', async t => {
   // guardamos la imagen
   let created = await db.saveImage(image)
   // le pasamos el id public a la function getImage
-  let result = await db.getImage(created.public_id)
+  let result = await db.getImage(created.publicId)
   // validamos que sea igul lo que se va a crear a lo que devulve el getimage
   t.deepEqual(created, result)
 
@@ -142,4 +142,28 @@ test('authenticate user', async t => {
 
   let failure = await db.authenticate('foo', 'car')
   t.false(failure)
+})
+
+test('list images by user', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.getImagesByUser, 'function', 'is a function')
+
+  let images = fixtures.getImages(10)
+  let userId = uuid.uuid()
+  let random = Math.round(Math.random() * images.length)
+
+  let saveImages = []
+  for (let i = 0; i < images.length; i++) {
+    if (i < random) {
+      images[i].userId = userId
+    }
+
+    saveImages.push(db.saveImages(images[i]))
+  }
+  // Aca si envianmos todas las promises para que guarden en la database
+  await Promise.all(saveImages)
+
+  let result = await db.getImagesByUser(userId)
+  t.is(result.length, random)
 })
