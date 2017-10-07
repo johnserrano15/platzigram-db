@@ -9,7 +9,7 @@ const fixtures = require('./fixtures')
 
 test.beforeEach('setup database', async t => {
   const dbName = `platzigram_${uuid.v4()}`
-  const db = new Db({ db: dbName })
+  const db = new Db({ db: dbName, setup: true })
   await db.connect()
   t.context.db = db
   t.context.dbName = dbName
@@ -159,11 +159,35 @@ test('list images by user', async t => {
       images[i].userId = userId
     }
 
-    saveImages.push(db.saveImages(images[i]))
+    saveImages.push(db.saveImage(images[i]))
   }
   // Aca si envianmos todas las promises para que guarden en la database
   await Promise.all(saveImages)
 
   let result = await db.getImagesByUser(userId)
+  t.is(result.length, random)
+})
+
+test('list images by tag', async t => {
+  let db = t.context.db
+
+  t.is(typeof db.getImagesByTag, 'function', 'getImagesByTag is a function')
+
+  let images = fixtures.getImages(10)
+  let tag = '#filterit'
+  let random = Math.round(Math.random() * images.length)
+
+  let saveImages = []
+  for (let i = 0; i < images.length; i++) {
+    if (i < random) {
+      images[i].description = tag
+    }
+
+    saveImages.push(db.saveImage(images[i]))
+  }
+  // Aca si envianmos todas las promises para que guarden en la database
+  await Promise.all(saveImages)
+
+  let result = await db.getImagesByTag(tag)
   t.is(result.length, random)
 })
